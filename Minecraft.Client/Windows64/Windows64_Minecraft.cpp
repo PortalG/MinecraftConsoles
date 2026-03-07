@@ -30,17 +30,18 @@
 //#include "Social\SocialManager.h"
 //#include "Leaderboards\LeaderboardManager.h"
 //#include "XUI\XUI_Scene_Container.h"
-//#include "NetworkManager.h"
-#include "..\..\Minecraft.Client\Tesselator.h"
+// #include "NetworkManager.h"
 #include "..\..\Minecraft.Client\Options.h"
-#include "Sentient\SentientManager.h"
+#include "..\..\Minecraft.Client\Tesselator.h"
 #include "..\..\Minecraft.World\IntCache.h"
-#include "..\Textures.h"
-#include "..\Settings.h"
-#include "Resource.h"
-#include "..\..\Minecraft.World\compression.h"
 #include "..\..\Minecraft.World\OldChunkStorage.h"
+#include "..\..\Minecraft.World\compression.h"
+#include "..\Settings.h"
+#include "..\Textures.h"
+#include "InputMap.h"
 #include "Network\WinsockNetLayer.h"
+#include "Resource.h"
+#include "Sentient\SentientManager.h"
 
 #include "Xbox/resource.h"
 
@@ -1548,7 +1549,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		}
 
 		// F1 toggles the HUD
-		if (g_KBMInput.IsKeyPressed(VK_F1))
+		if (g_KBMInput.IsKeyPressed(INPUT_HUD->key))
 		{
 			int primaryPad = ProfileManager.GetPrimaryPad();
 			unsigned char displayHud = app.GetGameSettings(primaryPad, eGameSetting_DisplayHUD);
@@ -1557,7 +1558,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		}
 
 		// F3 toggles onscreen debug info
-		if (g_KBMInput.IsKeyPressed(VK_F3))
+		if (g_KBMInput.IsKeyPressed(INPUT_DEBUG_INFO->key))
 		{
 			if (Minecraft* pMinecraft = Minecraft::GetInstance())
 			{
@@ -1570,7 +1571,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
 #ifdef _DEBUG_MENUS_ENABLED
         // F6 Open debug console
-        if (g_KBMInput.IsKeyPressed(VK_F6))
+        if (g_KBMInput.IsKeyPressed(INPUT_DEBUG_CONSOLE->key))
         {
         	static bool s_debugConsole = false;
         	s_debugConsole = !s_debugConsole;
@@ -1579,13 +1580,13 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 #endif
 
 		// F11 Toggle fullscreen
-		if (g_KBMInput.IsKeyPressed(VK_F11))
+		if (g_KBMInput.IsKeyPressed(INPUT_FULLSCREEN->key) || InputManager.ButtonPressed(INPUT_FULLSCREEN->button))
 		{
 			ToggleFullscreen();
 		}
 
 		// TAB opens game info menu. - Vvis :3 - Updated by detectiveren
-		if (g_KBMInput.IsKeyPressed(VK_TAB) && !ui.GetMenuDisplayed(0))
+		if (g_KBMInput.IsKeyPressed(INPUT_INFO->key) && !ui.GetMenuDisplayed(0))
 		{
 			if (Minecraft* pMinecraft = Minecraft::GetInstance())
 			{

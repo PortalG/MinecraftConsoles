@@ -3,6 +3,7 @@
 #ifdef _WINDOWS64
 
 #include "KeyboardMouseInput.h"
+#include "InputMap.h"
 #include <cmath>
 
 KeyboardMouseInput g_KBMInput;
@@ -358,16 +359,16 @@ void KeyboardMouseInput::SetWindowFocused(bool focused)
 float KeyboardMouseInput::GetMoveX() const
 {
 	float x = 0.0f;
-	if (m_keyDown[KEY_LEFT])  x += 1.0f;
-	if (m_keyDown[KEY_RIGHT]) x -= 1.0f;
+	if (m_keyDown[INPUT_LEFT->key])  x += 1.0f;
+	if (m_keyDown[INPUT_RIGHT->key]) x -= 1.0f;
 	return x;
 }
 
 float KeyboardMouseInput::GetMoveY() const
 {
 	float y = 0.0f;
-	if (m_keyDown[KEY_FORWARD])  y += 1.0f;
-	if (m_keyDown[KEY_BACKWARD]) y -= 1.0f;
+	if (m_keyDown[INPUT_FORWARD->key])  y += 1.0f;
+	if (m_keyDown[INPUT_BACKWARD->key]) y -= 1.0f;
 	return y;
 }
 

@@ -34,34 +34,35 @@
 #include "FrustumCuller.h"
 #include "Camera.h"
 
-#include "..\Minecraft.World\MobEffect.h"
+#include "..\Minecraft.World\ByteBuffer.h"
+#include "..\Minecraft.World\ChestTileEntity.h"
 #include "..\Minecraft.World\Difficulty.h"
-#include "..\Minecraft.World\net.minecraft.world.level.h"
-#include "..\Minecraft.World\net.minecraft.world.entity.h"
-#include "..\Minecraft.World\net.minecraft.world.entity.player.h"
-#include "..\Minecraft.World\net.minecraft.world.entity.item.h"
-#include "..\Minecraft.World\net.minecraft.world.phys.h"
 #include "..\Minecraft.World\File.h"
-#include "..\Minecraft.World\net.minecraft.world.level.storage.h"
+#include "..\Minecraft.World\HellRandomLevelSource.h"
+#include "..\Minecraft.World\IntCache.h"
+#include "..\Minecraft.World\Minecraft.World.h"
+#include "..\Minecraft.World\MobEffect.h"
+#include "..\Minecraft.World\SparseDataStorage.h"
+#include "..\Minecraft.World\SparseLightStorage.h"
+#include "..\Minecraft.World\StrongholdFeature.h"
+#include "..\Minecraft.World\System.h"
+#include "..\Minecraft.World\Villager.h"
 #include "..\Minecraft.World\net.minecraft.h"
 #include "..\Minecraft.World\net.minecraft.stats.h"
-#include "..\Minecraft.World\System.h"
-#include "..\Minecraft.World\ByteBuffer.h"
-#include "..\Minecraft.World\net.minecraft.world.level.tile.h"
+#include "..\Minecraft.World\net.minecraft.world.entity.animal.h"
+#include "..\Minecraft.World\net.minecraft.world.entity.h"
+#include "..\Minecraft.World\net.minecraft.world.entity.item.h"
+#include "..\Minecraft.World\net.minecraft.world.entity.monster.h"
+#include "..\Minecraft.World\net.minecraft.world.entity.player.h"
+#include "..\Minecraft.World\net.minecraft.world.item.h"
 #include "..\Minecraft.World\net.minecraft.world.level.chunk.h"
 #include "..\Minecraft.World\net.minecraft.world.level.dimension.h"
-#include "..\Minecraft.World\net.minecraft.world.item.h"
-#include "..\Minecraft.World\Minecraft.World.h"
+#include "..\Minecraft.World\net.minecraft.world.level.h"
+#include "..\Minecraft.World\net.minecraft.world.level.storage.h"
+#include "..\Minecraft.World\net.minecraft.world.level.tile.h"
+#include "..\Minecraft.World\net.minecraft.world.phys.h"
 #include "ClientConnection.h"
-#include "..\Minecraft.World\HellRandomLevelSource.h"
-#include "..\Minecraft.World\net.minecraft.world.entity.animal.h"
-#include "..\Minecraft.World\net.minecraft.world.entity.monster.h"
-#include "..\Minecraft.World\StrongholdFeature.h"
-#include "..\Minecraft.World\IntCache.h"
-#include "..\Minecraft.World\Villager.h"
-#include "..\Minecraft.World\SparseLightStorage.h"
-#include "..\Minecraft.World\SparseDataStorage.h"
-#include "..\Minecraft.World\ChestTileEntity.h"
+#include "InputMap.h"
 #include "TextureManager.h"
 #ifdef _XBOX
 #include "Xbox\Network\NetworkPlayerXbox.h"
@@ -1425,12 +1426,12 @@ void Minecraft::run_middle()
 					if(localplayers[i])
 				{
 					// 4J-PB - add these to check for coming out of idle
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_JUMP))				localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_JUMP;
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_USE))					localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_USE;
+					if(InputManager.ButtonPressed(i, INPUT_JUMP->button))				        localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_JUMP;
+					if(InputManager.ButtonPressed(i, INPUT_USE->button))					    localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_USE;
 
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_INVENTORY))				localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_INVENTORY;
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_ACTION))					localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_ACTION;
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_CRAFTING))				localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_CRAFTING;
+					if(InputManager.ButtonPressed(i, INPUT_INVENTORY->button))		    		localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_INVENTORY;
+					if(InputManager.ButtonPressed(i, INPUT_DESTROY->button))					localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_ACTION;
+					if(InputManager.ButtonPressed(i, INPUT_CRAFTING->button))   				localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_CRAFTING;
 					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_PAUSEMENU))
 					{
 						localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_PAUSEMENU;
@@ -1439,19 +1440,43 @@ void Minecraft::run_middle()
 #ifdef _DURANGO
 					if(InputManager.ButtonPressed(i, ACTION_MENU_GTC_PAUSE))					localplayers[i]->ullButtonsPressed|=1LL<<ACTION_MENU_GTC_PAUSE;
 #endif
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_DROP))					localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_DROP;
+					if(InputManager.ButtonPressed(i, INPUT_DROP->button))	    				localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_DROP;
 
 					// 4J-PB - If we're flying, the sneak needs to be held on to go down
 					if(localplayers[i]->abilities.flying)
 					{
-						if(InputManager.ButtonDown(i, MINECRAFT_ACTION_SNEAK_TOGGLE))			localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_SNEAK_TOGGLE;
+						if(InputManager.ButtonDown(i, INPUT_SNEAK->button)) 		        	localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_SNEAK_TOGGLE;
 					}
 					else
 					{
-						if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_SNEAK_TOGGLE))		localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_SNEAK_TOGGLE;
+						if(InputManager.ButtonPressed(i, INPUT_SNEAK->button))          		localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_SNEAK_TOGGLE;
 					}
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_RENDER_THIRD_PERSON))		localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_RENDER_THIRD_PERSON;
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_GAME_INFO))				localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_GAME_INFO;
+					if(InputManager.ButtonPressed(i, INPUT_VIEW->button))               		localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_RENDER_THIRD_PERSON;
+					if(InputManager.ButtonPressed(i, INPUT_INFO->button))	        			localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_GAME_INFO;
+
+					for (int slot = 0; slot < 9; slot++)
+					{
+					    if (InputManager.ButtonPressed(INPUT_MAP_HOTBAR[slot + INPUT_MAP_HOTBAR_OFFSET].button))
+					    {
+					        if (localplayers[i]->inventory)
+					            localplayers[i]->inventory->selected = slot;
+					    }
+					}
+
+					if (InputManager.ButtonPressed(INPUT_HUD->button))
+					{
+					    int primaryPad = ProfileManager.GetPrimaryPad();
+					    unsigned char displayHud = app.GetGameSettings(primaryPad, eGameSetting_DisplayHUD);
+					    app.SetGameSettings(primaryPad, eGameSetting_DisplayHUD, displayHud ? 0 : 1);
+					    app.SetGameSettings(primaryPad, eGameSetting_DisplayHand, displayHud ? 0 : 1);
+					}
+
+					if (InputManager.ButtonPressed(INPUT_DEBUG_CONSOLE->button))
+					{
+					    static bool s_debugConsole = false;
+					    s_debugConsole = !s_debugConsole;
+					    ui.ShowUIDebugConsole(s_debugConsole);
+					}
 
 #ifdef _WINDOWS64
 					// Keyboard/mouse button presses for player 0
@@ -1465,18 +1490,24 @@ void Minecraft::run_middle()
 							if(g_KBMInput.IsMouseButtonPressed(KeyboardMouseInput::MOUSE_RIGHT))
 								localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_USE;
 
-							if(g_KBMInput.IsKeyPressed(KeyboardMouseInput::KEY_INVENTORY))
+						    if(g_KBMInput.IsKeyPressed(INPUT_DESTROY->key))
+						        localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_ACTION;
+
+						    if(g_KBMInput.IsKeyPressed(INPUT_USE->key))
+						        localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_USE;
+
+							if(g_KBMInput.IsKeyPressed(INPUT_INVENTORY->key))
 								localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_INVENTORY;
 
-							if(g_KBMInput.IsKeyPressed(KeyboardMouseInput::KEY_DROP))
+							if(g_KBMInput.IsKeyPressed(INPUT_DROP->key))
 								localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_DROP;
 
-							if(g_KBMInput.IsKeyPressed(KeyboardMouseInput::KEY_CRAFTING) || g_KBMInput.IsKeyPressed(KeyboardMouseInput::KEY_CRAFTING_ALT))
+							if(g_KBMInput.IsKeyPressed(INPUT_CRAFTING->key))
 								localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_CRAFTING;
 
 							for (int slot = 0; slot < 9; slot++)
 							{
-								if (g_KBMInput.IsKeyPressed('1' + slot))
+								if (g_KBMInput.IsKeyPressed(INPUT_MAP_HOTBAR[slot + INPUT_MAP_HOTBAR_OFFSET].key))
 								{
 									if (localplayers[i]->inventory)
 										localplayers[i]->inventory->selected = slot;
@@ -1485,22 +1516,26 @@ void Minecraft::run_middle()
 						}
 
 						// Utility keys always work regardless of KBM active state
-						if(g_KBMInput.IsKeyPressed(KeyboardMouseInput::KEY_PAUSE) && !ui.IsTutorialVisible(i) && !ui.GetMenuDisplayed(i))
+						if(g_KBMInput.IsKeyPressed(VK_ESCAPE) && !ui.IsTutorialVisible(i) && !ui.GetMenuDisplayed(i))
 						{
 							localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_PAUSEMENU;
 							app.DebugPrintf("PAUSE PRESSED (keyboard) - ipad = %d\n",i);
 						}
 
-						if(g_KBMInput.IsKeyPressed(KeyboardMouseInput::KEY_THIRD_PERSON))
+						if(g_KBMInput.IsKeyPressed(INPUT_VIEW->key))
 							localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_RENDER_THIRD_PERSON;
 
-						if(g_KBMInput.IsKeyPressed(KeyboardMouseInput::KEY_DEBUG_MENU))
-						{
+						if(g_KBMInput.IsKeyPressed(INPUT_DEBUG_MENU->key))
 							localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_RENDER_DEBUG;
-						}
+
+					    if(g_KBMInput.IsKeyPressed(INPUT_SKIN->key))
+					        localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_CHANGE_SKIN;
+
+					    if(g_KBMInput.IsKeyPressed(INPUT_FLY->key))
+					        localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_FLY_TOGGLE;
 
 						// In flying mode, Shift held = sneak/descend
-						if(g_KBMInput.IsKBMActive() && g_KBMInput.IsKeyDown(KeyboardMouseInput::KEY_SNEAK))
+						if(g_KBMInput.IsKBMActive() && g_KBMInput.IsKeyDown(INPUT_SNEAK->key))
 						{
 							if (localplayers[i]->abilities.flying && !ui.GetMenuDisplayed(i))
 								localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_SNEAK_TOGGLE;
@@ -1514,10 +1549,10 @@ void Minecraft::run_middle()
 						localplayers[i]->ullDpad_last = 0;
 						localplayers[i]->ullDpad_this = 0;
 						localplayers[i]->ullDpad_filtered = 0;
-						if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_DPAD_RIGHT))			localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_CHANGE_SKIN;
-						if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_DPAD_UP))				localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_FLY_TOGGLE;
-						if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_DPAD_DOWN))			localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_RENDER_DEBUG;
-						if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_DPAD_LEFT))			localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_SPAWN_CREEPER;
+						if(InputManager.ButtonPressed(i, INPUT_SKIN->button))	        		localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_CHANGE_SKIN;
+						if(InputManager.ButtonPressed(i, INPUT_FLY->button))		    		localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_FLY_TOGGLE;
+						if(InputManager.ButtonPressed(i, INPUT_DEBUG_MENU->button))	    		localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_RENDER_DEBUG;
+						if(InputManager.ButtonPressed(i, INPUT_DEBUG_INFO->button))	    		localplayers[i]->ullButtonsPressed|=1LL<<MINECRAFT_ACTION_SPAWN_CREEPER;
 					}
 					else
 #endif
@@ -1547,7 +1582,7 @@ void Minecraft::run_middle()
 					}
 
 					// for the opacity timer
-					if(InputManager.ButtonPressed(i, MINECRAFT_ACTION_LEFT_SCROLL) || InputManager.ButtonPressed(i, MINECRAFT_ACTION_RIGHT_SCROLL))
+					if(InputManager.ButtonPressed(i, INPUT_LEFT_SLOT->button) || InputManager.ButtonPressed(i, INPUT_RIGHT_SLOT->button))
 						//InputManager.ButtonPressed(i, MINECRAFT_ACTION_USE) || InputManager.ButtonPressed(i, MINECRAFT_ACTION_ACTION))
 					{
 						app.SetOpacityTimer(i);
@@ -3482,11 +3517,11 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 		if (!ui.IsReloadingSkin()) ui.SetTooltips( iPad, iA, iB, iX, iY, iLT, iRT, iLB, iRB, iLS, iRS);
 
 		int wheel = 0;
-		if (InputManager.GetValue(iPad, MINECRAFT_ACTION_LEFT_SCROLL, true) > 0 && gameMode->isInputAllowed(MINECRAFT_ACTION_LEFT_SCROLL) )
+		if (InputManager.GetValue(iPad, INPUT_LEFT_SLOT->button, true) > 0 && gameMode->isInputAllowed(MINECRAFT_ACTION_LEFT_SCROLL) )
 		{
 			wheel = 1;
 		}
-		else if (InputManager.GetValue(iPad, MINECRAFT_ACTION_RIGHT_SCROLL,true) > 0 && gameMode->isInputAllowed(MINECRAFT_ACTION_RIGHT_SCROLL) )
+		else if (InputManager.GetValue(iPad, INPUT_RIGHT_SLOT->button, true) > 0 && gameMode->isInputAllowed(MINECRAFT_ACTION_RIGHT_SCROLL) )
 		{
 			wheel = -1;
 		}
@@ -3494,7 +3529,16 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 #ifdef _WINDOWS64
 		if (iPad == 0 && wheel == 0 && g_KBMInput.IsKBMActive())
 		{
-			wheel = g_KBMInput.GetMouseWheel();
+			if (gameMode->isInputAllowed(MINECRAFT_ACTION_LEFT_SCROLL) && gameMode->isInputAllowed(MINECRAFT_ACTION_RIGHT_SCROLL))
+			    wheel = g_KBMInput.GetMouseWheel();
+		    if (g_KBMInput.IsKeyPressed(INPUT_LEFT_SLOT->key) > 0 && gameMode->isInputAllowed(MINECRAFT_ACTION_LEFT_SCROLL) )
+		    {
+		        wheel = 1;
+		    }
+		    else if (g_KBMInput.IsKeyPressed(INPUT_RIGHT_SLOT->key) > 0 && gameMode->isInputAllowed(MINECRAFT_ACTION_RIGHT_SCROLL) )
+		    {
+		        wheel = -1;
+		    }
 		}
 #endif
 		if (wheel != 0)
@@ -3530,9 +3574,9 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 			}
 
 #ifdef _WINDOWS64
-			bool actionHeld = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_ACTION) || (iPad == 0 && g_KBMInput.IsKBMActive() && g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_LEFT));
+			bool actionHeld = InputManager.ButtonDown(iPad, INPUT_DESTROY->button) || (iPad == 0 && g_KBMInput.IsKBMActive() && (g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_LEFT) || g_KBMInput.IsKeyDown(INPUT_DESTROY->key)));
 #else
-			bool actionHeld = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_ACTION);
+			bool actionHeld = InputManager.ButtonDown(iPad, INPUT_DESTROY->button);
 #endif
 			if (actionHeld && ticks - player->lastClickTick[0] >= timer->ticksPerSecond / 4)
 			{
@@ -3561,9 +3605,9 @@ void Minecraft::tick(bool bFirst, bool bUpdateTextures)
 		}
 		*/
 #ifdef _WINDOWS64
-		bool useHeld = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_USE) || (iPad == 0 && g_KBMInput.IsKBMActive() && g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_RIGHT));
+		bool useHeld = InputManager.ButtonDown(iPad, INPUT_USE->button) || (iPad == 0 && g_KBMInput.IsKBMActive() && (g_KBMInput.IsMouseButtonDown(KeyboardMouseInput::MOUSE_RIGHT) || g_KBMInput.IsKeyDown(INPUT_USE->key)));
 #else
-		bool useHeld = InputManager.ButtonDown(iPad, MINECRAFT_ACTION_USE);
+		bool useHeld = InputManager.ButtonDown(iPad, INPUT_USE->button);
 #endif
 		if( player->isUsingItem() )
 		{

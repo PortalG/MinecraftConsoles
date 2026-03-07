@@ -14,24 +14,6 @@ public:
 	static const int MOUSE_MIDDLE = 2;
 	static const int MAX_MOUSE_BUTTONS = 3;
 
-	static const int KEY_FORWARD = 'W';
-	static const int KEY_BACKWARD = 'S';
-	static const int KEY_LEFT = 'A';
-	static const int KEY_RIGHT = 'D';
-	static const int KEY_JUMP = VK_SPACE;
-	static const int KEY_SNEAK = VK_LSHIFT;
-	static const int KEY_SPRINT = VK_CONTROL;
-	static const int KEY_INVENTORY = 'E';
-	static const int KEY_DROP = 'Q';
-	static const int KEY_CRAFTING = 'C';
-	static const int KEY_CRAFTING_ALT = 'R';
-	static const int KEY_CONFIRM = VK_RETURN;
-	static const int KEY_CANCEL = VK_ESCAPE;
-	static const int KEY_PAUSE = VK_ESCAPE;
-	static const int KEY_THIRD_PERSON = VK_F5;
-	static const int KEY_DEBUG_INFO = VK_F3;
-	static const int KEY_DEBUG_MENU = VK_F4;
-
 	void Init();
 	void Tick();
 	void ClearAllState();

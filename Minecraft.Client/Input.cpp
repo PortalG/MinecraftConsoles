@@ -6,6 +6,7 @@
 #include "..\Minecraft.World\net.minecraft.world.level.storage.h"
 #include "Input.h"
 #include "..\Minecraft.Client\LocalPlayer.h"
+#include "InputMap.h"
 #include "Options.h"
 #ifdef _WINDOWS64
 #include "Windows64\KeyboardMouseInput.h"
@@ -92,6 +93,8 @@ void Input::tick(LocalPlayer *player)
 		}
 	}
 
+    if (InputManager.ButtonPressed(iPad, INPUT_SPRINT->button)) sprinting = true;
+
 #ifdef _WINDOWS64
 	if (iPad == 0 && g_KBMInput.IsMouseGrabbed() && g_KBMInput.IsKBMActive())
 	{
@@ -100,16 +103,16 @@ void Input::tick(LocalPlayer *player)
 		{
 			if (!player->abilities.flying)
 			{
-				sneaking = g_KBMInput.IsKeyDown(KeyboardMouseInput::KEY_SNEAK);
+				sneaking = g_KBMInput.IsKeyDown(INPUT_SNEAK->key);
 			}
 		}
 
 		// Ctrl + forward = sprint (hold to sprint, including while flying)
 		{
-			bool ctrlHeld = g_KBMInput.IsKeyDown(KeyboardMouseInput::KEY_SPRINT);
+			bool sprintHeld = g_KBMInput.IsKeyDown(INPUT_SPRINT->key);
 			bool movingForward = (kbYA > 0.0f);
 
-			if (ctrlHeld && movingForward)
+			if (sprintHeld && movingForward)
 			{
 				sprinting = true;
 			}
@@ -185,10 +188,10 @@ void Input::tick(LocalPlayer *player)
 
     //jumping = controller.isButtonPressed(0);
 
-	unsigned int jump = InputManager.GetValue(iPad, MINECRAFT_ACTION_JUMP);
+	unsigned int jump = InputManager.GetValue(iPad, INPUT_JUMP->button);
 	bool kbJump = false;
 #ifdef _WINDOWS64
-	kbJump = (iPad == 0) && g_KBMInput.IsMouseGrabbed() && g_KBMInput.IsKBMActive() && g_KBMInput.IsKeyDown(KeyboardMouseInput::KEY_JUMP);
+	kbJump = (iPad == 0) && g_KBMInput.IsMouseGrabbed() && g_KBMInput.IsKBMActive() && g_KBMInput.IsKeyDown(INPUT_JUMP->key);
 #endif
 	if( (jump > 0 || kbJump) && pMinecraft->localgameModes[iPad]->isInputAllowed(MINECRAFT_ACTION_JUMP) )
 		jumping = true;

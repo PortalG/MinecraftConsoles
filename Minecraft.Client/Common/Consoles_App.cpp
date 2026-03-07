@@ -50,6 +50,7 @@
 #include "..\ArchiveFile.h"
 #endif
 #include "..\Minecraft.h"
+#include "InputMap.h"
 #ifdef _XBOX
 #include "..\Xbox\GameConfig\Minecraft.spa.h"
 #include "..\Xbox\Network\NetworkPlayerXbox.h"
@@ -6474,18 +6475,19 @@ wstring CMinecraftApp::FormatHTMLString(int iPad, const wstring &desc, int shado
 		text = replaceAll(text, L"{*CONTROLLER_MENU_NAVIGATE*}",		GetVKReplacement(VK_PAD_LTHUMB_LEFT) );
 	}
 
-	text = replaceAll(text, L"{*CONTROLLER_ACTION_JUMP*}",			GetActionReplacement(iPad,MINECRAFT_ACTION_JUMP			) );
-	text = replaceAll(text, L"{*CONTROLLER_ACTION_SNEAK*}",			GetActionReplacement(iPad,MINECRAFT_ACTION_SNEAK_TOGGLE			) );
-	text = replaceAll(text, L"{*CONTROLLER_ACTION_USE*}",			GetActionReplacement(iPad,MINECRAFT_ACTION_USE			) );
-	text = replaceAll(text, L"{*CONTROLLER_ACTION_ACTION*}",		GetActionReplacement(iPad,MINECRAFT_ACTION_ACTION		) );
-	text = replaceAll(text, L"{*CONTROLLER_ACTION_LEFT_SCROLL*}",	GetActionReplacement(iPad,MINECRAFT_ACTION_LEFT_SCROLL	) );
-	text = replaceAll(text, L"{*CONTROLLER_ACTION_RIGHT_SCROLL*}",	GetActionReplacement(iPad,MINECRAFT_ACTION_RIGHT_SCROLL ) );
-	text = replaceAll(text, L"{*CONTROLLER_ACTION_INVENTORY*}",		GetActionReplacement(iPad,MINECRAFT_ACTION_INVENTORY	) );
-	text = replaceAll(text, L"{*CONTROLLER_ACTION_CRAFTING*}",		GetActionReplacement(iPad,MINECRAFT_ACTION_CRAFTING		) );
-	text = replaceAll(text, L"{*CONTROLLER_ACTION_DROP*}",			GetActionReplacement(iPad,MINECRAFT_ACTION_DROP			) );
-	text = replaceAll(text, L"{*CONTROLLER_ACTION_CAMERA*}",		GetActionReplacement(iPad,MINECRAFT_ACTION_RENDER_THIRD_PERSON	) );
-	text = replaceAll(text, L"{*CONTROLLER_ACTION_MENU_PAGEDOWN*}",	GetActionReplacement(iPad,ACTION_MENU_PAGEDOWN	) );
-	text = replaceAll(text, L"{*CONTROLLER_ACTION_DISMOUNT*}",		GetActionReplacement(iPad,MINECRAFT_ACTION_SNEAK_TOGGLE	) );	
+    // Adapt to InputMap instead.
+	text = replaceAll(text, L"{*CONTROLLER_ACTION_JUMP*}",			GetActionReplacement(iPad, INPUT_JUMP->button));
+	text = replaceAll(text, L"{*CONTROLLER_ACTION_SNEAK*}",			GetActionReplacement(iPad, INPUT_SNEAK->button));
+	text = replaceAll(text, L"{*CONTROLLER_ACTION_USE*}",			    GetActionReplacement(iPad, INPUT_USE->button));
+	text = replaceAll(text, L"{*CONTROLLER_ACTION_ACTION*}",		    GetActionReplacement(iPad, INPUT_DESTROY->button));
+	text = replaceAll(text, L"{*CONTROLLER_ACTION_LEFT_SCROLL*}",	    GetActionReplacement(iPad, MINECRAFT_ACTION_LEFT_SCROLL));
+	text = replaceAll(text, L"{*CONTROLLER_ACTION_RIGHT_SCROLL*}",	GetActionReplacement(iPad, MINECRAFT_ACTION_RIGHT_SCROLL));
+	text = replaceAll(text, L"{*CONTROLLER_ACTION_INVENTORY*}",		GetActionReplacement(iPad, INPUT_INVENTORY->button));
+	text = replaceAll(text, L"{*CONTROLLER_ACTION_CRAFTING*}",		GetActionReplacement(iPad, INPUT_CRAFTING->button));
+	text = replaceAll(text, L"{*CONTROLLER_ACTION_DROP*}",			GetActionReplacement(iPad, INPUT_DROP->button));
+	text = replaceAll(text, L"{*CONTROLLER_ACTION_CAMERA*}",		    GetActionReplacement(iPad, INPUT_VIEW->button));
+	text = replaceAll(text, L"{*CONTROLLER_ACTION_MENU_PAGEDOWN*}",	GetActionReplacement(iPad, ACTION_MENU_PAGEDOWN));
+	text = replaceAll(text, L"{*CONTROLLER_ACTION_DISMOUNT*}",		GetActionReplacement(iPad, INPUT_SNEAK->button));
 	text = replaceAll(text, L"{*CONTROLLER_VK_A*}",					GetVKReplacement(VK_PAD_A) );
 	text = replaceAll(text, L"{*CONTROLLER_VK_B*}",					GetVKReplacement(VK_PAD_B) );
 	text = replaceAll(text, L"{*CONTROLLER_VK_X*}",					GetVKReplacement(VK_PAD_X) );
