@@ -50,7 +50,7 @@
 #include "..\ArchiveFile.h"
 #endif
 #include "..\Minecraft.h"
-#include "InputMap.h"
+#include "..\InputMap.h"
 #ifdef _XBOX
 #include "..\Xbox\GameConfig\Minecraft.spa.h"
 #include "..\Xbox\Network\NetworkPlayerXbox.h"
