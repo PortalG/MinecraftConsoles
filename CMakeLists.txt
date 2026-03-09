@@ -120,7 +120,7 @@ if(CMAKE_HOST_WIN32)
                 "ReadMe.txt" "Network Implementation Notes.txt"      # Extra.
             /XD
                 "Durango*" "Orbis*" "PS*" "Xbox"                     # Console data.
-                "sce_sys" "TROPDIR"                                  # Playstation data.
+                "sce_sys" "TROPDIR"                                  # PlayStation data.
                 "Graphics" "DummyTexturePack" "GameConfig"           # Extra.
   )
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Windows64/GameHDD")
@@ -132,31 +132,45 @@ elseif(CMAKE_HOST_UNIX)
   message(STATUS "Starting asset copy...")
   execute_process(
     COMMAND tar
-          "--exclude=*.c" "--exclude=*.cpp" "--exclude=*.h" "--exclude=*.hpp" # Source code.
-          "--exclude=*.xui" "--exclude=*.inl" "--exclude=*.asm"
-          "--exclude=*.vcxproj" "--exclude=*.vcxproj.*"                       # Project files.
-          "--exclude=*.sln" "--exclude=*.cd"
-          "--exclude=*.xml" "--exclude=*.lang"                                # Language files.
-          "--exclude=*.resx" "--exclude=*.loc"
-          "--exclude=*.docx" "--exclude=*.xls"                                # Office documents.
-          "--exclude=*.bat" "--exclude=*.cmd"                                 # Scripts.
-          "--exclude=*.ps1" "--exclude=*.py"
-          "--exclude=*.lib" "--exclude=*.lib.*"                               # Static lib.
-          "--exclude=*.swf" "--exclude=*.msscmp" "--exclude=*.wav"            # Uncompiled/unused res.
-          "--exclude=*Test*"                                                  # Test files. (who could have guessed)
-          "--exclude=MediaPS*" "--exclude=MediaOrbis.arc"                     # Console media.
-          "--exclude=MediaDurango.arc"
-          "--exclude=ReadMe.txt" "--exclude=Network Implementation Notes.txt" # Extra.
+            "--exclude=*.c" "--exclude=*.cpp" "--exclude=*.h" "--exclude=*.hpp" # Source code.
+            "--exclude=*.xui" "--exclude=*.inl" "--exclude=*.asm"
 
-          "--exclude=Durango*" "--exclude=Orbis*"            # Console data.
-          "--exclude=PS*" "--exclude=Xbox"
-          "--exclude=sce_sys" "--exclude=TROPDIR"            # Playstation data.
-          "--exclude=Graphics" "--exclude=DummyTexturePack"  # Extra.
-          "--exclude=GameConfig"
+            "--exclude=*.vcxproj" "--exclude=*.vcxproj.*"                       # Project files.
+            "--exclude=*.sln" "--exclude=*.cd"
+
+            "--exclude=*.xml" "--exclude=*.lang"                                # Language files.
+            "--exclude=*.resx" "--exclude=*.loc"
+
+            "--exclude=*.docx" "--exclude=*.xls"                                # Office documents.
+
+            "--exclude=*.bat" "--exclude=*.cmd"                                 # Scripts.
+            "--exclude=*.ps1" "--exclude=*.py"
+
+            "--exclude=*.lib" "--exclude=*.lib.*"                               # Static lib.
+
+            "--exclude=*.swf" "--exclude=*.msscmp" "--exclude=*.wav"            # Uncompiled/unused res.
+
+            "--exclude=*Test*"                                                  # Test files. (who could have guessed)
+
+            "--exclude=MediaPS*" "--exclude=MediaOrbis.arc"                     # Console media.
+            "--exclude=MediaDurango.arc"
+
+            "--exclude=ReadMe.txt" "--exclude=Network Implementation Notes.txt" # Extra.
+
+
+
+            "--exclude=Durango*" "--exclude=Orbis*"                             # Console data.
+            "--exclude=PS*" "--exclude=Xbox"
+
+            "--exclude=sce_sys" "--exclude=TROPDIR"                             # PlayStation data.
+
+            "--exclude=Graphics" "--exclude=DummyTexturePack"                   # Extra.
+            "--exclude=GameConfig"
+
             -cf - -C "${CMAKE_CURRENT_SOURCE_DIR}/Minecraft.Client/" .
     COMMAND tar -xvf - -C "${CMAKE_CURRENT_BINARY_DIR}/"
   )
-  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Windows64/GameHDD")
+  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Windows64/GameHDD/")
 else()
   message(FATAL_ERROR "Redist and asset copying is only supported on Windows (Robocopy) and Unix systems (cp, tar).")
 endif()
